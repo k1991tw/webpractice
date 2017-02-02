@@ -25,24 +25,47 @@ public class K1991twUtils {
 		return origin;
 	}
 	public String createUpdateSQL(Object pet) {
-		 
+		/**
+		* 產生指令，內容為"Update Table名稱( 目前CLASS SIMAPLE nAME同於TABLE名稱，例如:com.company.jdbctest1.model.Player的simpleName為Player) set  "		
+                **/ 
 		StringBuffer sbf =new StringBuffer("Update "+pet.getClass().getSimpleName() +" set  ");
+		
+		/***
+		* 將此PO(persistent Object )的field(有時也稱proerty，因為她對應資料庫表格的欄位)列出來		
+                ****/
 		final PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(pet);
 		List<String> nameList =new LinkedList<String>();
 		for (PropertyDescriptor pd :pds){
 			try {
+				/***
+				*  取得property名稱...由於這邊名稱(camel name rule)與資料庫欄位名稱一致，並沒有遵照資料庫欄位名稱慣例(PERSON_NAME,MOTHER_NAME)
+ 				**/
 				String name = pd.getName();
+				
+				/****
+				* 略過屬性名稱為class,name				
+                                */
 				if("class".equalsIgnoreCase(name)||"new".equalsIgnoreCase(name)){
 					continue;
 				} 
-				nameList.add(name+"=:"+name);	 
+				
+				/***
+				* 模仿spring jdbc template update statement對欄位的處理				
+                                */
+				nameList.add(name+"=:"+name);
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
 		}
 		String setSatement =	StringUtils.join(nameList.toArray(), ",");
 		sbf.append(setSatement).append("  WHERE id=:id");
+		
+		/****
+		* 最後完成spring jdbc template update sql
+                */
 		String sql =sbf.toString(); 
+		
 		return sql;
 	}
 }
