@@ -38,12 +38,14 @@ public class K1991twUtils {
 		for (PropertyDescriptor pd :pds){
 			try {
 				/***
-				*  取得property名稱...由於這邊名稱(camel name rule)與資料庫欄位名稱一致，並沒有遵照資料庫欄位名稱慣例(PERSON_NAME,MOTHER_NAME)
+				*  取得property名稱...由於這邊名稱(camel name rule)與資料庫欄位名稱一致，
+				*  並沒有遵照資料庫欄位名稱慣例(PERSON_NAME,MOTHER_NAME)
  				**/
 				String name = pd.getName();
 				
 				/****
-				* 略過屬性名稱為class,name				
+				* 略過屬性名稱為class,name，不會執行nameList.add(name+"=:"+name);
+				*  因為這兩個屬性是繼承Object來的，實際上無此兩個欄位			
                                 */
 				if("class".equalsIgnoreCase(name)||"new".equalsIgnoreCase(name)){
 					continue;
