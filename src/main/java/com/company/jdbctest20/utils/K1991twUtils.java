@@ -10,20 +10,45 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Component; 
 @Component
 public class K1991twUtils {
+	
+	/***
+	* 模仿spring jdbc template範例中,由PO產生key-value Map物件(MapSqlParameterSource)	
+        **/
 	public MapSqlParameterSource createPoParameterSource(Object pet) {
 		final MapSqlParameterSource origin = new MapSqlParameterSource();
 		final PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(pet);
+		/***
+		* 將此PO(persistent Object )的field(有時也稱proerty，因為她對應資料庫表格的欄位)列出來		
+                ****/
 		for (PropertyDescriptor pd :pds){
-			try {
-				String name = pd.getName();
+			try { 	
+				
+				/***
+				*  取得property名稱...由於這邊名稱(camel name rule)與資料庫欄位名稱一致，
+				*  並沒有遵照資料庫欄位名稱慣例(PERSON_NAME,MOTHER_NAME)
+ 				**/
+                                String name = pd.getName();
+				
+				/***
+				*  取得property實際資料內容...由於資料型別為String,Integer 居多, Object為父類別可以接受
+ 				**/
 				Object value = PropertyUtils.getProperty(pet, name); 
-					origin.addValue(name, value ); 
+				
+				/***
+				* 放入Map當中
+				**/
+				origin.addValue(name, value ); 
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
 		}
 		return origin;
 	}
+	
+	/****
+	* 根據PO產生為spring jdbc template用的SQL	
+        **/
 	public String createUpdateSQL(Object pet) {
 		/**
 		* 產生指令，內容為"Update Table名稱( 目前CLASS SIMAPLE nAME同於TABLE名稱，例如:com.company.jdbctest1.model.Player的simpleName為Player) set  "		
